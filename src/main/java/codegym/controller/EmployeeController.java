@@ -7,10 +7,10 @@ import codegym.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -42,15 +42,24 @@ public class EmployeeController {
         return modelAndView;
     }
 
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleError(Exception e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message",e.getMessage());
+        return modelAndView;
+    }
+
     @PostMapping("/create")
     public ModelAndView create(@Valid @ModelAttribute("em") Employee employee,
                                BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()){
+        if (bindingResult.hasFieldErrors()) {
             ModelAndView modelAndView = new ModelAndView("create");
             return modelAndView;
         }
         iEmployeeService.save(employee);
         ModelAndView modelAndView = new ModelAndView("redirect:/show");
         return modelAndView;
+
+
     }
 }
